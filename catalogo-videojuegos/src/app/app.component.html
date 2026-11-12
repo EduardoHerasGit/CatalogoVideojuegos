@@ -1,0 +1,104 @@
+<main class="container">
+  <h1>GAME CATALOG</h1>
+
+  @if (errorMessage) {
+    <p class="error">{{ errorMessage }}</p>
+  }
+
+  <!-- Búsqueda por ID -->
+  <section class="panel">
+    <h2>Buscar videojuego por ID</h2>
+    <input #idInput type="number" min="1" placeholder="ID">
+    <button (click)="searchById(idInput.value)">Buscar</button>
+
+    @if (idMessage) {
+      <p class="error">{{ idMessage }}</p>
+    }
+    @if (foundGame) {
+      <p class="found">
+        <strong>#{{ foundGame.id }} {{ foundGame.title }}</strong> —
+        {{ foundGame.genre }} · {{ foundGame.platform }} ·
+        {{ foundGame.price.toFixed(2) }} €
+      </p>
+    }
+  </section>
+
+  <!-- Búsquedas y filtros -->
+  <section class="panel">
+    <h2>Búsqueda y filtros</h2>
+
+    <div class="row">
+      <label>Título (title_like):</label>
+      <input #titleInput type="text" placeholder="p. ej. Racing">
+      <button (click)="onSearchTitle(titleInput.value)">Buscar</button>
+    </div>
+
+    <div class="row">
+      <label>Búsqueda global (q):</label>
+      <input #globalInput type="text" placeholder="p. ej. PC, RPG">
+      <button (click)="onSearchGlobal(globalInput.value)">Buscar</button>
+    </div>
+
+    <div class="row">
+      <label>Género:</label>
+      <select #genreSelect (change)="onGenreChange(genreSelect.value)">
+        <option value="">Todos</option>
+        <option value="Action">Action</option>
+        <option value="Adventure">Adventure</option>
+        <option value="RPG">RPG</option>
+        <option value="Racing">Racing</option>
+        <option value="Simulation">Simulation</option>
+        <option value="Sports">Sports</option>
+        <option value="Strategy">Strategy</option>
+      </select>
+
+      <label>Plataforma:</label>
+      <select #platformSelect (change)="onPlatformChange(platformSelect.value)">
+        <option value="">Todas</option>
+        <option value="PC">PC</option>
+        <option value="PlayStation">PlayStation</option>
+        <option value="Xbox">Xbox</option>
+        <option value="Switch">Switch</option>
+      </select>
+    </div>
+
+    <div class="row">
+      <label>Precio:</label>
+      <input #minInput type="text" inputmode="decimal" placeholder="mínimo">
+      —
+      <input #maxInput type="text" inputmode="decimal" placeholder="máximo">
+      <button (click)="onApplyPrices(minInput.value, maxInput.value)">Aplicar filtros</button>
+    </div>
+
+    <div class="row">
+      <button class="secondary"
+        (click)="clearFilters();
+                 titleInput.value = ''; globalInput.value = '';
+                 minInput.value = ''; maxInput.value = '';
+                 genreSelect.value = ''; platformSelect.value = ''">
+        Limpiar filtros
+      </button>
+    </div>
+  </section>
+
+  <!-- Listado -->
+  <section class="list">
+    @for (game of games; track game.id) {
+      <article class="card">
+        <h3>{{ game.title }}</h3>
+        <p>{{ game.genre }} · {{ game.platform }}</p>
+        <p class="price">{{ game.price.toFixed(2) }} €</p>
+      </article>
+    } @empty {
+      <p>No se han encontrado videojuegos.</p>
+    }
+  </section>
+
+  <!-- Paginación -->
+  <section class="pager">
+    <button (click)="previousPage()" [disabled]="currentPage === 1">Anterior</button>
+    <span>Página {{ currentPage }} de {{ totalPages }}</span>
+    <button (click)="nextPage()" [disabled]="currentPage >= totalPages">Siguiente</button>
+    <p>Registros encontrados: {{ totalItems }}</p>
+  </section>
+</main>
